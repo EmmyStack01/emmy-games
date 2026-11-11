@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<link rel="stylesheet" href="/src/style.css" />
+<style id="inset-override"></style>
+<script type="importmap">{"imports":{"phaser":"/phaser-stub.js"}}</script>
+</head><body>
+<div id="app">
+  <div id="game-container"></div>
+  <div id="vignette"></div>
+  <div id="hud">
+    <header class="hud-bar">
+      <h1 class="hud-title">Emmy's <span>Hustle</span></h1>
+      <div class="hud-right">
+        <div class="hud-money" id="hud-money"><span class="hud-money-icon">&#8358;</span><span id="hud-money-value">1,250</span></div>
+        <div id="settings-root"></div>
+      </div>
+    </header>
+    <p id="hud-message" class="hud-message visible">Welcome back, Emmy! Mrs. Folake is waiting for her parcel.</p>
+  </div>
+  <div id="touch-controls" hidden></div>
+</div>
+<script type="module">
+import MissionUI from '/src/ui/MissionUI.js';
+import VirtualJoystick from '/src/ui/VirtualJoystick.js';
+import SettingsPanel from '/src/ui/SettingsPanel.js';
+const ui = new MissionUI({ hud: document.getElementById('hud'), app: document.getElementById('app') });
+const joystick = new VirtualJoystick({ parent: document.getElementById('touch-controls'), side: 'right', autoShow: false });
+joystick.setVisible(true);
+new SettingsPanel({ buttonHost: document.getElementById('settings-root'), panelHost: document.getElementById('app') });
+ui.setObjective('Deliver the package to Mrs. Folake', 'deliver');
+window.h = { ui, joystick };
+window.ready = true;
+</script>
+</body></html>

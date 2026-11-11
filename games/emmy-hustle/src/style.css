@@ -1,0 +1,944 @@
+:root {
+  /* Emmy's palette */
+  --navy-deep: #141830;
+  --navy: #1d2a5c;
+  --navy-mid: #2a3c7a;
+  --royal: #1f5bff;
+  --royal-light: #6f95ff;
+  --ice: #e6efff;
+  --gold: #ffc43d;
+
+  --font: "Trebuchet MS", "Segoe UI", Verdana, sans-serif;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--navy-deep);
+  color: var(--ice);
+  font-family: var(--font);
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+  position: fixed;
+  inset: 0;
+}
+
+#game-container {
+  position: absolute;
+  inset: 0;
+}
+
+#game-container canvas {
+  display: block;
+  outline: none;
+}
+
+/* Light: a faint warm glow from the top-left (where Emmy's rim light comes from)
+   and a navy vignette at the edges. Sits above the game, below the HUD. */
+#vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 22% 14%, rgba(255, 236, 196, 0.1), transparent 55%),
+    radial-gradient(ellipse at 50% 50%, transparent 52%, rgba(12, 16, 44, 0.38) 100%);
+}
+
+/* ---------- HUD ---------- */
+#hud {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: calc(var(--safe-top) + 10px) calc(var(--safe-right) + 12px) 0
+    calc(var(--safe-left) + 12px);
+  pointer-events: none;
+}
+
+.hud-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#settings-root {
+  display: flex;
+}
+
+.hud-title {
+  font-size: clamp(1rem, 4.5vw, 1.6rem);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  padding: 0.3em 0.85em;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--navy-mid), var(--navy));
+  border: 3px solid var(--royal);
+  box-shadow: 0 4px 0 var(--navy-deep), inset 0 2px 0 rgba(255, 255, 255, 0.14);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+}
+
+.hud-title span {
+  color: var(--royal-light);
+}
+
+.hud-money {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: clamp(1rem, 4.2vw, 1.4rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  padding: 0.25em 0.8em 0.25em 0.3em;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--navy-mid), var(--navy));
+  border: 3px solid var(--royal);
+  box-shadow: 0 4px 0 var(--navy-deep), inset 0 2px 0 rgba(255, 255, 255, 0.14);
+}
+
+.hud-money-icon {
+  display: grid;
+  place-items: center;
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+  font-size: 0.9em;
+  color: var(--navy-deep);
+  background: var(--gold);
+  border: 2px solid var(--navy-deep);
+}
+
+.hud-money.bump {
+  animation: bump 0.35s ease-out;
+}
+
+@keyframes bump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+.hud-message {
+  align-self: center;
+  max-width: min(92vw, 520px);
+  padding: 0.6em 1em;
+  border-radius: 16px;
+  text-align: center;
+  color: var(--ice);
+  font-size: clamp(0.85rem, 3.4vw, 1.05rem);
+  line-height: 1.35;
+  background: rgba(20, 24, 48, 0.92);
+  border: 2px solid var(--royal-light);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.hud-message.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Settings button + panel ---------- */
+.settings-btn {
+  pointer-events: auto; /* the HUD itself is click-through */
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--ice);
+  background: linear-gradient(135deg, var(--navy-mid), var(--navy));
+  border: 3px solid var(--royal);
+  box-shadow: 0 4px 0 var(--navy-deep);
+  cursor: pointer;
+  font: inherit;
+  touch-action: manipulation;
+}
+
+.settings-btn svg {
+  display: block;
+  width: 26px;
+  height: 26px;
+}
+
+.settings-btn .gear-hole {
+  fill: var(--navy);
+}
+
+.settings-btn[aria-expanded="true"] {
+  background: var(--royal);
+}
+
+.settings-btn[aria-expanded="true"] .gear-hole {
+  fill: var(--royal);
+}
+
+.settings-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--navy-deep);
+}
+
+.settings-btn:focus-visible,
+.settings-close:focus-visible,
+.segment:focus-visible {
+  outline: 3px solid var(--royal-light);
+  outline-offset: 3px;
+}
+
+.settings-panel {
+  position: absolute;
+  z-index: 20;
+  top: calc(var(--safe-top) + 10px + 62px);
+  right: calc(var(--safe-right) + 12px);
+  width: min(calc(100vw - var(--safe-left) - var(--safe-right) - 24px), 300px);
+  padding: 8px 14px 14px;
+  border-radius: 18px;
+  color: var(--ice);
+  background: rgba(20, 24, 48, 0.96);
+  border: 3px solid var(--royal);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.settings-panel[hidden] {
+  display: none;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.settings-title {
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.settings-close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -10px;
+  border: 0;
+  border-radius: 50%;
+  color: var(--ice);
+  background: transparent;
+  font: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.settings-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  opacity: 0.9;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55em;
+  min-height: 48px;
+  padding: 0.4em 0.6em;
+  border-radius: 14px;
+  color: var(--ice);
+  background: rgba(111, 149, 255, 0.12);
+  border: 3px solid rgba(111, 149, 255, 0.4);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.segment[aria-pressed="true"] {
+  color: #fff;
+  background: var(--royal);
+  border-color: var(--ice);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4);
+}
+
+.segment[aria-pressed="true"] .segment-label::before {
+  content: "\2713\00a0";
+}
+
+/* Tiny "screen" icon with a dot in the corner the joystick will use. */
+.segment-icon {
+  position: relative;
+  flex: none;
+  width: 22px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+}
+
+.segment-icon::after {
+  content: "";
+  position: absolute;
+  bottom: 1px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.segment[data-side="left"] .segment-icon::after {
+  left: 1px;
+}
+
+.segment[data-side="right"] .segment-icon::after {
+  right: 1px;
+}
+
+.settings-hint {
+  margin-top: 10px;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  opacity: 0.75;
+}
+
+/* ---------- Touch controls ---------- */
+/* Full-screen host that never blocks the game: only the joystick zone inside
+   it receives pointer events. */
+#touch-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+}
+
+#touch-controls[hidden] {
+  display: none;
+}
+
+.joystick-zone {
+  /* Whole touch target: always >= 132px, so well above the 44px minimum. */
+  --joy-zone: clamp(132px, 32vmin, 210px);
+
+  position: absolute;
+  /* Right is the default; data-side="left" overrides below. */
+  right: calc(var(--safe-right) + 4px);
+  left: auto;
+  bottom: calc(var(--safe-bottom) + 4px);
+  width: var(--joy-zone);
+  height: var(--joy-zone);
+  display: grid;
+  place-items: center;
+  border-radius: 50%; /* corners of the square don't capture touches */
+
+  pointer-events: auto;
+  touch-action: none; /* no scroll / pinch / double-tap zoom over the joystick */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.joystick-zone[data-side="left"] {
+  left: calc(var(--safe-left) + 4px);
+  right: auto;
+}
+
+.joystick-zone[data-side="right"] {
+  right: calc(var(--safe-right) + 4px);
+  left: auto;
+}
+
+.joystick-zone[hidden] {
+  display: none !important;
+}
+
+.joystick-base {
+  position: relative;
+  width: 76%;
+  height: 76%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 40%,
+    rgba(230, 239, 255, 0.32),
+    rgba(20, 24, 48, 0.6)
+  );
+  border: 3px solid rgba(31, 91, 255, 0.85);
+  box-shadow: 0 4px 0 rgba(20, 24, 48, 0.55);
+  opacity: 0.62; /* see-through so it never hides gameplay */
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+.joystick-base::before {
+  content: "";
+  position: absolute;
+  inset: 14%;
+  border-radius: 50%;
+  border: 2px dashed rgba(230, 239, 255, 0.35);
+}
+
+.joystick-zone.is-active .joystick-base {
+  opacity: 0.95;
+}
+
+.joystick-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 42%;
+  height: 42%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #9db8ff, var(--royal));
+  border: 3px solid var(--navy-deep);
+  box-shadow: 0 3px 0 rgba(20, 24, 48, 0.7);
+  transform: translate(-50%, -50%);
+  transition: transform 0.12s ease-out; /* springs back on release */
+  will-change: transform;
+  pointer-events: none;
+}
+
+.joystick-zone.is-active .joystick-knob {
+  transition: none; /* follows the finger with no lag */
+}
+
+/* ---------- Small / landscape phones ---------- */
+@media (max-width: 360px) {
+  .hud-title { padding: 0.25em 0.6em; }
+  .hud-right { gap: 6px; }
+}
+
+@media (max-height: 480px) {
+  .hud-title { font-size: 1rem; }
+  .hud-money { font-size: 1rem; }
+
+  .settings-panel {
+    top: calc(var(--safe-top) + 10px + 56px);
+    padding: 4px 12px 10px;
+  }
+  .segment { min-height: 44px; }
+  .settings-hint { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-money.bump { animation: none; }
+  .hud-message { transition: none; }
+  .joystick-knob { transition: none; }
+}
+
+/* ---------- Missions ---------- */
+
+/* The current objective, in the HUD column under the title bar */
+.mission-objective {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  max-width: min(92vw, 520px);
+  padding: 0.4em 0.9em 0.4em 0.55em;
+  border-radius: 999px;
+  color: var(--ice);
+  font-size: clamp(0.82rem, 3.2vw, 0.98rem);
+  font-weight: 800;
+  line-height: 1.25;
+  background: rgba(20, 24, 48, 0.92);
+  border: 2px solid var(--royal-light);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.mission-objective[hidden] {
+  display: none;
+}
+
+.mission-objective-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.7em;
+  height: 1.7em;
+  border-radius: 50%;
+  color: var(--navy-deep);
+  background: var(--gold);
+}
+
+.mission-objective[data-kind="pickup"] .mission-objective-icon {
+  background: var(--royal-light);
+}
+
+.mission-objective-icon svg {
+  width: 1.05em;
+  height: 1.05em;
+}
+
+/* The job offer card (a modal over the game) */
+.mission-offer {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: calc(var(--safe-top) + 12px) calc(var(--safe-right) + 12px)
+    calc(var(--safe-bottom) + 12px) calc(var(--safe-left) + 12px);
+  background: rgba(12, 16, 44, 0.5);
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.mission-offer[hidden] {
+  display: none;
+}
+
+.mission-offer-card {
+  width: min(100%, 360px);
+  padding: 18px 18px 16px;
+  border-radius: 22px;
+  text-align: center;
+  color: var(--ice);
+  background: linear-gradient(160deg, var(--navy-mid), var(--navy) 55%, var(--navy-deep));
+  border: 3px solid var(--royal);
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.45);
+  animation: mission-pop 0.25s ease-out;
+}
+
+.mission-offer-kicker {
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  color: var(--gold);
+}
+
+.mission-offer-title {
+  margin: 2px 0 6px;
+  font-size: clamp(1.4rem, 6vw, 1.8rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #fff;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+.mission-offer-body {
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.mission-offer-reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 12px 0 4px;
+  padding: 0.3em 0.9em 0.3em 0.35em;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--gold);
+  background: rgba(255, 196, 61, 0.12);
+  border: 2px solid rgba(255, 196, 61, 0.5);
+}
+
+.mission-coin {
+  display: grid;
+  place-items: center;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  font-size: 0.9em;
+  color: var(--navy-deep);
+  background: var(--gold);
+  border: 2px solid var(--navy-deep);
+}
+
+.mission-offer-buttons {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.mission-btn {
+  min-height: 52px; /* comfortable touch target */
+  border-radius: 14px;
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.mission-btn-primary {
+  color: #fff;
+  background: var(--royal);
+  border: 3px solid var(--ice);
+  box-shadow: 0 4px 0 var(--navy-deep);
+}
+
+.mission-btn-secondary {
+  color: var(--ice);
+  background: transparent;
+  border: 3px solid rgba(111, 149, 255, 0.5);
+}
+
+.mission-btn:active {
+  transform: translateY(2px);
+}
+
+.mission-btn:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+@keyframes mission-pop {
+  from { opacity: 0; transform: scale(0.92) translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Big banner: "PACKAGE COLLECTED!" / "DELIVERY COMPLETED!" */
+.mission-toast {
+  position: absolute;
+  left: 50%;
+  top: 26%;
+  z-index: 25;
+  width: max-content;
+  max-width: min(92vw, 460px);
+  padding: 0.7em 1.4em 0.8em;
+  border-radius: 20px;
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(160deg, var(--navy-mid), var(--navy-deep));
+  border: 3px solid var(--royal);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, -50%) scale(0.85);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+}
+
+.mission-toast.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s;
+}
+
+.mission-toast[data-kind="done"] {
+  border-color: var(--gold);
+}
+
+.mission-toast-title {
+  font-size: clamp(1.25rem, 5.6vw, 2rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.mission-toast-body {
+  margin-top: 0.15em;
+  font-size: clamp(1.05rem, 4.4vw, 1.6rem);
+  font-weight: 800;
+  color: var(--gold);
+}
+
+.mission-toast[data-kind="pickup"] .mission-toast-body {
+  color: var(--ice);
+}
+
+/* Arrow at the screen edge pointing to an off-screen objective */
+.mission-arrow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 11;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  pointer-events: none;
+  will-change: transform;
+  --arrow-color: var(--gold);
+}
+
+.mission-arrow[hidden] {
+  display: none;
+}
+
+.mission-arrow[data-kind="pickup"] {
+  --arrow-color: var(--royal-light);
+}
+
+.mission-arrow svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 0 rgba(20, 24, 48, 0.8));
+}
+
+.mission-arrow .arrow-edge {
+  fill: var(--arrow-color);
+  stroke: var(--navy-deep);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+/* Landscape phones: a more compact card, buttons side by side */
+@media (max-height: 480px) {
+  .mission-offer-card { padding: 12px 16px 12px; }
+  .mission-offer-title { font-size: 1.3rem; }
+  .mission-offer-reward { margin-top: 8px; }
+  .mission-offer-buttons { grid-template-columns: 1fr 1fr; margin-top: 10px; }
+  .mission-btn { min-height: 46px; }
+  .mission-toast { top: 22%; }
+}
+
+/* Short landscape (the same screens as above, but only when wider than tall): the banner goes BELOW
+   the HUD instead of over it. The title, money and gear fill the top 56px and the objective line under
+   them ends near 108px, so the banner's top edge sits at 120px (the top margin the speech bubble
+   and the objective arrow also keep clear of), and it is a little more compact so it covers less of
+   the game and stays clear of the joystick. Colours, border, shadow, pop animation and the 2.6 second
+   duration are unchanged, and so is every other screen size. */
+@media (orientation: landscape) and (max-height: 480px) {
+  .mission-toast {
+    top: calc(var(--safe-top) + 120px);
+    padding: 0.45em 1.2em 0.55em;
+    transform: translate(-50%, 0) scale(0.85);
+  }
+
+  .mission-toast.show {
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  .mission-toast-title { font-size: 1.4rem; }
+  .mission-toast-body { font-size: 1.1rem; }
+}
+
+/* "Replay mission" prompt: a small button that appears near a shop whose job can be replayed
+   (a replay never opens the offer card by itself). It sits at the bottom, on the side AWAY from
+   the joystick, so the free thumb can reach it and it never covers the joystick. */
+.mission-replay {
+  position: absolute;
+  z-index: 12; /* above the objective arrow (11); below the settings panel (20), banners (25) and the offer card (30) */
+  bottom: calc(var(--safe-bottom) + 14px);
+  left: calc(var(--safe-left) + 14px);
+  /* the joystick zone is at least 132px wide: keep clear of it even on a narrow phone */
+  max-width: calc(100vw - var(--safe-left) - var(--safe-right) - 132px - 36px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  color: var(--ice);
+  background: linear-gradient(135deg, var(--navy-mid), var(--navy));
+  border: 3px solid var(--royal);
+  box-shadow: 0 4px 0 var(--navy-deep);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  pointer-events: auto; /* the HUD is click-through; this is a real target */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  animation: mission-replay-in 0.16s ease-out;
+}
+
+.mission-replay[hidden] {
+  display: none;
+}
+
+/* the joystick is on the left: the prompt goes on the right */
+.mission-replay[data-joystick="left"] {
+  left: auto;
+  right: calc(var(--safe-right) + 14px);
+}
+
+.mission-replay-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.mission-replay-label {
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.mission-replay-title {
+  overflow: hidden;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--royal-light);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* the keyboard hint: shown only with a mouse and keyboard */
+.mission-replay-key {
+  display: none;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: var(--navy-deep);
+  background: var(--gold);
+}
+
+.mission-replay:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--navy-deep);
+}
+
+.mission-replay:focus-visible {
+  outline: 3px solid var(--royal-light);
+  outline-offset: 3px;
+}
+
+@media (pointer: fine) {
+  /* mouse and keyboard: no joystick, so the prompt is centred, with the E hint */
+  .mission-replay,
+  .mission-replay[data-joystick="left"] {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    max-width: min(320px, calc(100vw - 48px));
+  }
+
+  .mission-replay:active {
+    transform: translateX(-50%) translateY(2px);
+  }
+
+  .mission-replay-key {
+    display: grid;
+  }
+}
+
+@keyframes mission-replay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Customer speech bubble: a greeting or a reply, placed above the customer by script (it follows the
+   camera). It sits UNDER the joystick (9), the HUD (10), the arrow (11), the replay prompt (12), the
+   banners (25) and the offer card (30), so it can never cover or block them; where it overlaps the
+   joystick, the joystick wins. A plain div, never focusable: tapping it dismisses it. */
+.mission-speech {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  max-width: min(calc(100vw - var(--safe-left) - var(--safe-right) - 24px), 240px);
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 16px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--navy-deep);
+  background: var(--ice);
+  border: 3px solid var(--royal);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  pointer-events: auto; /* the HUD is click-through; this is a real target */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  will-change: transform;
+  animation: mission-speech-in 0.16s ease-out;
+}
+
+.mission-speech[hidden] {
+  display: none;
+}
+
+/* the little tail: points down at the customer, or up when the bubble sits below them */
+.mission-speech-tail {
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  background: var(--ice);
+  border: solid var(--royal);
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.mission-speech[data-flip="below"] .mission-speech-tail {
+  bottom: auto;
+  top: -9px;
+  border-width: 3px 0 0 3px;
+}
+
+/* reads the device's safe-area insets (as its padding); never seen */
+.mission-speech-probe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  visibility: hidden;
+  pointer-events: none;
+  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+}
+
+@keyframes mission-speech-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mission-offer-card { animation: none; }
+  .mission-toast { transition: none; }
+  .mission-replay { animation: none; }
+  .mission-speech { animation: none; }
+}

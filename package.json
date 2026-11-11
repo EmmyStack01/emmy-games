@@ -1,0 +1,18 @@
+{
+  "name": "emmy-games",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Emmy Games portal and game collection, built into one static site for Cloudflare Pages.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:all": "node scripts/build.mjs --publish-all",
+    "build:fast": "node scripts/build.mjs --skip-tests",
+    "test": "node --test \"tests/**/*.test.mjs\"",
+    "test:game:emmy-hustle": "npm test --prefix games/emmy-hustle",
+    "test:all": "npm test && npm run test:game:emmy-hustle"
+  }
+}

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+
+# Temporary folders created by the root build (removed automatically)
+.build-staging-*/
+.build-previous-*/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+desktop.ini

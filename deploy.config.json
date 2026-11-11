@@ -1,0 +1,10 @@
+{
+  "productionBranch": "main",
+  "games": {
+    "emmy-hustle": {
+      "requiredOutputFiles": [
+        "assets/characters/emmy/emmy-sheet.png"
+      ]
+    }
+  }
+}

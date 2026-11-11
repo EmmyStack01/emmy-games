@@ -1,0 +1,90 @@
+{
+  "proportions": {
+    "headScale": 1,
+    "torsoWidth": 1,
+    "torsoHeight": 1,
+    "legLength": 1,
+    "armLength": 1,
+    "shoeScale": 1
+  },
+  "outline": {
+    "width": 2
+  },
+  "hair": {
+    "size": 1,
+    "width": 1,
+    "highlight": 1,
+    "curls": 1
+  },
+  "face": {
+    "width": 38,
+    "height": 31
+  },
+  "glasses": {
+    "lensWidth": 17.5,
+    "lensHeight": 13.5,
+    "rim": 1.5,
+    "spacing": 10.4,
+    "yOffset": 0,
+    "tint": 0.22,
+    "glint": 0.85
+  },
+  "hoodie": {
+    "drawstring": 16,
+    "rimLight": 0.5
+  },
+  "backpack": {
+    "visible": true,
+    "scale": 1,
+    "strap": 6
+  },
+  "back": {
+    "hoodSize": 1
+  },
+  "side": {
+    "torsoDepth": 1,
+    "bagDepth": 1,
+    "legGap": 4
+  },
+  "idle": {
+    "lift": 1
+  },
+  "walk": {
+    "bob": 2,
+    "strideFront": 3.5,
+    "strideSide": 9,
+    "footLift": 3.5,
+    "armSwing": 3.5
+  },
+  "colors": {
+    "outline": "#141830",
+    "skin": "#b96e42",
+    "skinShade": "#965430",
+    "blush": "#d9724a",
+    "sclera": "#ffffff",
+    "iris": "#5b3623",
+    "eye": "#1b1520",
+    "lip": "#cc8159",
+    "lipDark": "#6f3622",
+    "lens": "#e6f4ff",
+    "frame": "#d8ebff",
+    "hair": "#171219",
+    "hairLight": "#463a52",
+    "hoodie": "#1d2a5c",
+    "hoodieShade": "#141d44",
+    "hoodieRim": "#4f73e6",
+    "royal": "#1f5bff",
+    "aglet": "#aab3c4",
+    "zipPull": "#dfe7ff",
+    "tee": "#0f1634",
+    "trousers": "#191c2b",
+    "trousersShade": "#10121d",
+    "trousersLight": "#3a4161",
+    "trousersPocket": "#232842",
+    "pack": "#1c1e29",
+    "packLight": "#4a4f63",
+    "shoeWhite": "#f6f8ff",
+    "shoeShade": "#c3cbe6",
+    "shoeBlue": "#1f56e6"
+  }
+}

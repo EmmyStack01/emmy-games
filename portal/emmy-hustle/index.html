@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Emmy Hustle | Emmy Games</title>
+<meta name="description" content="Emmy Hustle is a 2D cartoon adventure game from Emmy Games. It is in development.">
+<link rel="canonical" href="https://game.emmystack01.com/emmy-hustle/">
+<link rel="icon" type="image/svg+xml" href="/asset/Emmy_STACK01_Pad_Icon.svg">
+<meta name="theme-color" content="#f7f9fc">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="/games.css">
+</head>
+<body class="game">
+<header class="nav">
+  <a class="logo" href="/" aria-label="Emmy Games home"><img src="/asset/Emmy_STACK01_Pad_Icon.svg" alt="" width="36" height="36">Emmy <small>Games</small></a>
+  <div class="nav-right"><a class="back" href="/"><i class="ri-arrow-left-line" aria-hidden="true"></i> All games</a><button type="button" class="nav-toggle" id="openMenu" aria-label="Open menu" aria-controls="drawer" aria-expanded="false"><span class="line"></span><span class="line"></span><span class="line"></span></button></div>
+</header>
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" aria-label="Site navigation" aria-hidden="true">
+  <div class="drawer-header">
+    <a class="logo" href="/"><img src="/asset/Emmy_STACK01_Pad_Icon.svg" alt="" width="36" height="36">Emmy <small>Games</small></a>
+    <button type="button" id="closeMenu" class="close-btn" aria-label="Close menu"><i class="ri-close-line" aria-hidden="true"></i></button>
+  </div>
+  <p class="drawer-tag">Main menu</p>
+  <nav class="drawer-nav">
+    <a href="/" class="drawer-link"><i class="ri-home-4-line" aria-hidden="true"></i> Home</a>
+    <a href="/emmy-hustle/" class="drawer-link active" aria-current="page"><i class="ri-gamepad-line" aria-hidden="true"></i> Emmy Hustle<span class="pill">SOON</span></a>
+    <a href="https://emmystack01.com/products" class="drawer-link"><i class="ri-box-3-line" aria-hidden="true"></i> All products</a>
+    <a href="https://emmystack01.com" class="drawer-link"><i class="ri-global-line" aria-hidden="true"></i> Emmy STACK01</a>
+  </nav>
+  <div class="drawer-foot">
+    <div class="socials"><a href="https://wa.me/2349076991076" rel="noopener" aria-label="WhatsApp"><i class="ri-whatsapp-line"></i></a><a href="https://x.com/Emmy_STACK01" rel="noopener" aria-label="X"><i class="ri-twitter-x-line"></i></a><a href="https://github.com/EmmyStack01" rel="noopener" aria-label="GitHub"><i class="ri-github-line"></i></a></div>
+    <p>&copy; <span class="year"></span> Emmy STACK01. All rights reserved.</p>
+  </div>
+</aside>
+<main class="stage eh"><div class="stars" aria-hidden="true"></div><div class="eh-box">
+  <span class="status">In development</span>
+  <img src="/asset/emmy-player.webp" width="477" height="523" alt="">
+  <h1>Emmy <span>Hustle</span></h1>
+  <p>A 2D cartoon adventure game. We are still building it. Check back soon, or message us and we will tell you when it is ready.</p>
+  <a class="cta start" href="https://wa.me/2349076991076?text=Hi%20Emmy%20STACK01%2C%20tell%20me%20when%20Emmy%20Hustle%20is%20ready." rel="noopener"><i class="ri-whatsapp-line" aria-hidden="true"></i> Notify me</a>
+</div></main>
+<footer class="footer"><div class="footer-bottom"><div class="footer-legal">&copy; <span class="year"></span> Emmy STACK01. All rights reserved.</div></div></footer>
+<script>
+  /* AUTO-CHANGE-YEAR */
+  const baseYear = 2026;
+  const currentYear = new Date().getFullYear();
+
+  document.querySelectorAll('.year').forEach(element => {
+      if (currentYear > baseYear) {
+          element.textContent = `${baseYear}–${currentYear}`;
+      } else {
+          element.textContent = baseYear;
+      }
+  });
+</script>
+<script src="/games.js" defer></script>
+</body>
+</html>
